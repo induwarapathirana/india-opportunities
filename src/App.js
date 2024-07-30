@@ -8,16 +8,17 @@ import { Search, Filter, ChevronDown, Check } from 'lucide-react';
 import { Listbox, Transition } from '@headlessui/react';
 import OpportunityList from './components/OpportunityList';
 
+// Apollo Client setup
 const httpLink = createHttpLink({
-  uri: 'https://gis-api.aiesec.org/graphql',
+  uri: process.env.REACT_APP_API_ENDPOINT,
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = 'dULOnvbWRs6hw1szM5LEhNVF1HnnFm8nxQK-sKmfDaQ';
+  const token = process.env.REACT_APP_API_TOKEN;
   return {
     headers: {
       ...headers,
-      Authorization: token
+      Authorization: token,
     }
   }
 });
@@ -58,6 +59,7 @@ const client = new ApolloClient({
     },
   }
 });
+
 
 const homeLcOptions = [
   { id: 4567, full_name: '-' },
