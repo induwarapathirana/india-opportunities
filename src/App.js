@@ -8,7 +8,7 @@ import { Search, Filter, ChevronDown, Check } from 'lucide-react';
 import { Listbox, Transition } from '@headlessui/react';
 import OpportunityList from './components/OpportunityList';
 
-// Apollo Client setup
+// Apollo Client setups
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_API_ENDPOINT,
 });
