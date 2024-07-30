@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+//import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { ExternalLink, MapPin, Calendar, DollarSign, Home, Search } from 'lucide-react';
+import { ExternalLink, MapPin, Calendar, DollarSign, Home } from 'lucide-react';
 
 const GET_OPPORTUNITIES = gql`
   query searchOpportunities($page: Int, $perPage: Int, $committee: Int, $programme: Int, $search: String) {
