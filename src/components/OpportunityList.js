@@ -5,7 +5,7 @@ import { ExternalLink, MapPin, Calendar, DollarSign, Home } from 'lucide-react';
 const GET_OPPORTUNITIES = gql`
   query searchOpportunities($page: Int, $perPage: Int, $committee: Int, $programme: Int, $search: String) {
     searchOpportunities(
-      filters: { status: "open", committee: $committee, programmes: [$programme] }
+      filters: { status: "open", committee: $committee, programmes: [$programme], sort: title }
       pagination: { page: $page, per_page: $perPage }
       q: $search
     ) {
