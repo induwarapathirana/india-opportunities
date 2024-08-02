@@ -15,7 +15,7 @@ import App from './App';
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>React App</title>
+    <title>AIESEC in India Search tool</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
