@@ -4,7 +4,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
 import { RetryLink } from "@apollo/client/link/retry";
 import { BrowserRouter as Router, Route, Routes, useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { Search, Filter, ChevronDown, Check } from 'lucide-react';
+import { Search, Filter, ChevronDown, Check, Moon, Sun } from 'lucide-react';
 import { Listbox, Transition } from '@headlessui/react';
 import OpportunityList from './components/OpportunityList';
 
@@ -102,18 +102,22 @@ const homeLcOptions = [
 ];
 
 const programmeOptions = [
-  { id: 1, full_name: 'Global Volunteer' },
-  { id: 2, full_name: 'Global Talent/Teacher' },
+  { id: 7, full_name: 'Global Volunteer' },
+  { id: 8, full_name: 'Global Talent' },
+  { id: 9, full_name: 'Global Teacher' }
 ];
 
-function Dropdown({ options, selected, onChange, placeholder }) {
+
+function Dropdown({ options, selected, onChange, placeholder, darkMode }) {
   return (
     <Listbox value={selected} onChange={onChange}>
       <div className="relative mt-1">
-        <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+        <Listbox.Button className={`relative w-full cursor-default rounded-lg py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm ${
+          darkMode ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'
+        }`}>
           <span className="block truncate">{selected ? selected.full_name : placeholder}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <ChevronDown className={`h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} aria-hidden="true" />
           </span>
         </Listbox.Button>
         <Transition
@@ -122,13 +126,21 @@ function Dropdown({ options, selected, onChange, placeholder }) {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Listbox.Options className={`absolute mt-1 max-h-60 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm ${
+            darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+          }`}>
             {options.map((option) => (
               <Listbox.Option
                 key={option.id}
                 className={({ active }) =>
                   `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? 'bg-amber-100 text-amber-900' : 'text-gray-900'
+                    active
+                      ? darkMode
+                        ? 'bg-gray-700 text-white'
+                        : 'bg-amber-100 text-amber-900'
+                      : darkMode
+                      ? 'text-gray-300'
+                      : 'text-gray-900'
                   }`
                 }
                 value={option}
@@ -139,7 +151,9 @@ function Dropdown({ options, selected, onChange, placeholder }) {
                       {option.full_name}
                     </span>
                     {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                      <span className={`absolute inset-y-0 left-0 flex items-center pl-3 ${
+                        darkMode ? 'text-amber-500' : 'text-amber-600'
+                      }`}>
                         <Check className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}
@@ -154,10 +168,13 @@ function Dropdown({ options, selected, onChange, placeholder }) {
   );
 }
 
-
-function AppHeader({ committee, programme, search, onCommitteeChange, onProgrammeChange, onSearchChange, onSearchSubmit }) {
+function AppHeader({ committee, programme, search, onCommitteeChange, onProgrammeChange, onSearchChange, onSearchSubmit, darkMode, toggleDarkMode }) {
   return (
-    <header className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 px-8 shadow-lg z-50">
+    <header className={`fixed top-0 left-0 right-0 ${
+      darkMode
+        ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white'
+        : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white'
+    } py-4 px-8 shadow-lg z-50`}>
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
         <h1 className="text-3xl font-bold mb-4 md:mb-0">AIESEC in India | Opportunities</h1>
         <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
@@ -168,7 +185,11 @@ function AppHeader({ committee, programme, search, onCommitteeChange, onProgramm
               value={search}
               onChange={onSearchChange}
               placeholder="Search opportunities..."
-              className="pl-10 pr-4 py-2 rounded-full bg-white bg-opacity-20 focus:bg-opacity-100 focus:text-gray-800 transition-all duration-300"
+              className={`pl-10 pr-4 py-2 rounded-full ${
+                darkMode
+                  ? 'bg-gray-700 text-white placeholder-gray-400'
+                  : 'bg-white bg-opacity-20 focus:bg-opacity-100 focus:text-gray-800'
+              } transition-all duration-300`}
             />
             <button type="submit" className="hidden">Search</button>
           </form>
@@ -180,6 +201,7 @@ function AppHeader({ committee, programme, search, onCommitteeChange, onProgramm
                 selected={homeLcOptions.find(option => option.id === parseInt(committee, 10))}
                 onChange={(selectedOption) => onCommitteeChange(selectedOption.id)}
                 placeholder="Select Committee"
+                darkMode={darkMode}
               />
             </div>
             <div className="w-48">
@@ -188,8 +210,17 @@ function AppHeader({ committee, programme, search, onCommitteeChange, onProgramm
                 selected={programmeOptions.find(option => option.id === parseInt(programme, 10))}
                 onChange={(selectedOption) => onProgrammeChange(selectedOption.id)}
                 placeholder="Select Programme"
+                darkMode={darkMode}
               />
             </div>
+            <button
+              onClick={toggleDarkMode}
+              className={`p-2 rounded-full ${
+                darkMode ? 'bg-gray-700 text-yellow-400' : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
           </div>
         </div>
       </div>
@@ -198,10 +229,11 @@ function AppHeader({ committee, programme, search, onCommitteeChange, onProgramm
 }
 
 function OpportunityListWrapper() {
-  const { page = "1", committee = "1585", programme = "1" } = useParams();
+  const { page = "1", committee = "1585", programme = "7" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [search, setSearch] = useState(searchParams.get('q') || '');
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (page === "1" && committee === "1585" && programme === "1" && !searchParams.get('q')) {
@@ -235,8 +267,12 @@ function OpportunityListWrapper() {
     navigate(`/1/${committee}/${programme}?q=${search}`);
   };
 
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 pt-32"> {/* Add padding-top here */}
+    <div className={`min-h-screen pt-32 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
       <AppHeader
         committee={committee}
         programme={programme}
@@ -245,6 +281,8 @@ function OpportunityListWrapper() {
         onProgrammeChange={handleProgrammeChange}
         onSearchChange={handleSearchChange}
         onSearchSubmit={handleSearchSubmit}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
       />
       <main className="container mx-auto px-4 py-8">
         <OpportunityList
@@ -254,6 +292,7 @@ function OpportunityListWrapper() {
           programme={parseInt(programme, 10)}
           search={search}
           onPageChange={handlePageChange}
+          darkMode={darkMode}
         />
       </main>
     </div>
@@ -273,4 +312,3 @@ function App() {
 }
 
 export default App;
-
