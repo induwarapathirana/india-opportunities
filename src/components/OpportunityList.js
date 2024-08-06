@@ -5,7 +5,7 @@ import { ExternalLink, MapPin, Calendar, DollarSign, Home } from 'lucide-react';
 const GET_OPPORTUNITIES = gql`
   query searchOpportunities($page: Int, $perPage: Int, $committee: Int, $programme: Int, $search: String) {
     searchOpportunities(
-      filters: { status: "open", committee: $committee, programmes: [$programme], sort: created_at, sort_direction: desc }
+      filters: { status: "open", committee: $committee, programmes: [$programme], sort: updated_at, sort_direction: desc }
       pagination: { page: $page, per_page: $perPage }
       q: $search
     ) {
@@ -177,7 +177,7 @@ function InfoItem({ icon, label, value, darkMode }) {
 
 function AvailableSlots({ slots, darkMode }) {
   if (!slots || slots.length === 0) {
-    return <InfoItem icon={<Calendar size={16} />} label="Available Slots" value="No slots available" darkMode={darkMode} />;
+    return <InfoItem icon={<Calendar size={16} />} label="Available Slots" value="Contact your IR partner to arrange slots." darkMode={darkMode} />;
   }
 
   return (
