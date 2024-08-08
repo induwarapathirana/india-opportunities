@@ -4,23 +4,20 @@ import { Listbox, Transition } from '@headlessui/react';
 import Dropdown from './Dropdown';
 import { homeLcOptions, programmeOptions } from '../../data';
 
-
 function AppHeader({ committee, programme, search, onCommitteeChange, onProgrammeChange, onSearchChange, onSearchSubmit, darkMode, toggleDarkMode }) {
   const [showFilters, setShowFilters] = useState(false);
 
-  // Component implementation
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 ${
-      darkMode
-        ? 'bg-gradient-to-r from-gray-800 to-gray-900 text-white'
-        : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white'
-    } py-4 px-4 shadow-lg z-50`}>
+    <header className={`fixed top-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-yellow-400 text-white py-4 px-4 shadow-lg z-50`}>
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2 md:mb-0 text-center md:text-left whitespace-nowrap overflow-hidden text-ellipsis">AIESEC in India | Opportunities</h1>
+        <div className="flex items-center space-x-4">
+          <img src="https://aiesec-logos.s3.eu-west-1.amazonaws.com/White-Black-Logo.png" alt="AIESEC Logo" className="h-8 md:h-10" />
+          <h1 className="text-2xl md:text-3xl font-bold mb-0 text-left whitespace-nowrap overflow-hidden text-ellipsis">Opportunities</h1>
+        </div>
         <form onSubmit={onSearchSubmit} className="relative mb-2 md:mb-0 w-full max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
