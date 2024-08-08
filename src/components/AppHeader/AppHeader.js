@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Filter, ChevronDown, Check, Moon, Sun } from 'lucide-react';
-import { Listbox, Transition } from '@headlessui/react';
+import { Search, Filter, Moon, Sun } from 'lucide-react';
+import {Transition } from '@headlessui/react';
 import Dropdown from './Dropdown';
 import { homeLcOptions, programmeOptions } from '../../data';
 

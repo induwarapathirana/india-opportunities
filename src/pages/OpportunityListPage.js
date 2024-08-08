@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import OpportunityList from '../components/OpportunityList';
-import useDarkMode from '../hooks/useDarkMode';
+//import useDarkMode from '../hooks/useDarkMode';
 
 function OpportunityListWrapper() {
   const { page = "1", committee = "1585", programme = "7" } = useParams();
