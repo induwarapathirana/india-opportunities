@@ -1,7 +1,8 @@
-//import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { ExternalLink, MapPin, Calendar, DollarSign, Home } from 'lucide-react';
-//
+import { ExternalLink, MapPin, Calendar, DollarSign, Home, Info, Bed, Utensils, Laptop, Bus } from 'lucide-react';
+
+
 const GET_OPPORTUNITIES = gql`
   query searchOpportunities($page: Int, $perPage: Int, $committee: Int, $programme: Int, $search: String) {
     searchOpportunities(
@@ -86,51 +87,73 @@ function OpportunityCard({ opportunity, darkMode }) {
     logistics_info
   } = opportunity;
 
+  const [showTooltip, setShowTooltip] = useState(false);
+  //const cardRef = useRef(null);
+  const buttonRef = useRef(null);
+  const tooltipRef = useRef(null);
+  //const [showPopup, setShowPopup] = useState(false);
+
+  
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+        setShowTooltip(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleTooltipToggle = () => {
+    setShowTooltip(!showTooltip);
+  };
+
   return (
     <div className={`${
       darkMode ? 'bg-gray-800 text-white' : 'bg-white'
     } shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row`}>
-      <div className="relative h-48 md:h-auto md:w-1/3 lg:w-1/4">
+      <div className="relative h-32 md:h-auto md:w-1/4">
         {cover_photo ? (
           <img src={cover_photo.url} alt={title} className="w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-500">No image available</div>
+          <div className="absolute inset-0 flex items-center justify-center text-gray-500">No image</div>
         )}
       </div>
       <div className="flex-1 p-4 flex flex-col">
-        <div className="mb-4">
-          <h2 className={`text-xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>{title}</h2>
-          <div className="flex flex-wrap gap-2 mb-2">
+        <div className="mb-2">
+          <h2 className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-800'}`}>{title}</h2>
+          <div className="flex flex-wrap gap-1 mb-2">
             <Badge text={programme?.short_name_display} color={darkMode ? 'blue-dark' : 'blue'} />
             <Badge text={location} color={darkMode ? 'green-dark' : 'green'} />
             <Badge text={organisation?.name} color={darkMode ? 'purple-dark' : 'purple'} />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div className="space-y-2 text-sm">
-            <InfoItem icon={<Home size={16} />} label="Home LC" value={home_lc?.full_name} darkMode={darkMode} />
-            <InfoItem icon={<MapPin size={16} />} label="Location" value={location} darkMode={darkMode} />
-            <InfoItem 
-              icon={<DollarSign size={16} />} 
-              label="Project Fee" 
-              value={`${project_fee.fee} ${project_fee.currency}`}
-              darkMode={darkMode}
-            />
-          </div>
-          <div>
-            <AvailableSlots slots={available_slots} darkMode={darkMode} />
-          </div>
+        <div className="grid grid-cols-2 gap-2 text-sm mb-2">
+          <InfoItem icon={<Home size={14} />} label="Home LC" value={home_lc?.full_name} darkMode={darkMode} />
+          <InfoItem icon={<MapPin size={14} />} label="Location" value={location} darkMode={darkMode} />
+          <InfoItem 
+            icon={<DollarSign size={14} />} 
+            label="Fee" 
+            value={`${project_fee.fee} ${project_fee.currency}`}
+            darkMode={darkMode}
+          />
+          <div 
+          ref={buttonRef}
+          className={`flex items-center cursor-pointer ${
+            darkMode ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-800'
+          } px-2 py-1 rounded-md`}
+          onClick={handleTooltipToggle}
+        >
+          <Info size={14} className="mr-1" />
+          <span className="font-semibold">Logistics Info</span>
         </div>
-        <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'} pt-4 mb-4`}>
-          <h3 className={`text-md font-semibold mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Logistics Info</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <LogisticsItem label="Accommodation" covered={logistics_info?.accommodation_covered} provided={logistics_info?.accommodation_provided} darkMode={darkMode} />
-            <LogisticsItem label="Food" covered={logistics_info?.food_covered} provided={logistics_info?.food_provided} darkMode={darkMode} />
-            <LogisticsItem label="Computer" provided={logistics_info?.computer_provided} darkMode={darkMode} />
-            <LogisticsItem label="Transportation" covered={logistics_info?.transportation_covered} provided={logistics_info?.transportation_provided} darkMode={darkMode} />
-          </div>
-        </div>
-        <div className="mt-auto">
+      </div>
+        <AvailableSlots slots={available_slots} darkMode={darkMode} />
+        <div className="mt-2">
           <a
             href={`https://aiesec.org/opportunity/global-volunteer/${id}`}
             target="_blank"
@@ -139,15 +162,33 @@ function OpportunityCard({ opportunity, darkMode }) {
               darkMode 
                 ? 'bg-blue-600 hover:bg-blue-700' 
                 : 'bg-blue-600 hover:bg-blue-700'
-            } text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out text-center`}
+            } text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out text-center text-sm`}
           >
-            View Details <ExternalLink size={16} className="inline-block ml-1" />
+            View Details <ExternalLink size={14} className="inline-block ml-1" />
           </a>
         </div>
       </div>
+      {showTooltip && (
+        <div 
+          ref={tooltipRef}
+          className="absolute z-20"
+          style={{
+            top: buttonRef.current ? buttonRef.current.offsetTop + buttonRef.current.offsetHeight + 10 : 0,
+            left: buttonRef.current ? buttonRef.current.offsetLeft : 0,
+          }}
+        >
+          <div className="relative">
+            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-white dark:bg-gray-800"></div>
+            <div className="max-h-72 overflow-y-auto">
+              <LogisticsInfo logistics_info={logistics_info} darkMode={darkMode} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 function Badge({ text, color }) {
   const colorClasses = {
@@ -199,24 +240,101 @@ function AvailableSlots({ slots, darkMode }) {
   );
 }
 
-function LogisticsItem({ label, covered, provided, darkMode }) {
-  const getCoverageText = () => {
-    if (covered && provided) return 'Covered & Provided';
-    if (covered) return 'Covered';
-    if (provided) return 'Provided';
-    return 'Not Covered/Provided';
-  };
-  
+function LogisticsInfo({ logistics_info, darkMode }) {
   return (
-    <div className="flex items-center justify-between">
-      <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>{label}:</span>
-      <span className={`text-xs ${
-        covered || provided 
-          ? darkMode ? 'text-green-400' : 'text-green-600'
-          : darkMode ? 'text-red-400' : 'text-red-600'
-      }`}>
-        {getCoverageText()}
-      </span>
+    <div className={`w-72 p-4 ${darkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl`}>
+      <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-800'}`}>Logistics Details</h3>
+      <div className="space-y-4">
+        <LogisticsItem 
+          icon={<Bed size={18} />}
+          label="Accommodation" 
+          covered={logistics_info?.accommodation_covered}
+          provided={logistics_info?.accommodation_provided}
+          darkMode={darkMode}
+        />
+        <LogisticsItem 
+          icon={<Utensils size={18} />}
+          label="Food" 
+          covered={logistics_info?.food_covered}
+          provided={logistics_info?.food_provided}
+          darkMode={darkMode}
+        />
+        <LogisticsItem 
+          icon={<Laptop size={18} />}
+          label="Computer" 
+          provided={logistics_info?.computer_provided}
+          darkMode={darkMode}
+        />
+        <LogisticsItem 
+          icon={<Bus size={18} />}
+          label="Transportation" 
+          covered={logistics_info?.transportation_covered}
+          provided={logistics_info?.transportation_provided}
+          darkMode={darkMode}
+        />
+      </div>
+    </div>
+  );
+}
+
+function LogisticsItem({ icon, label, covered, provided, darkMode }) {
+  const formatStatus = (status) => {
+    switch(status) {
+      case 'covered':
+        return { text: 'Covered', color: 'text-green-600' };
+      case 'not_covered':
+        return { text: 'Not covered', color: 'text-red-600' };
+      case 'provided':
+        return { text: 'Provided', color: 'text-green-600' };
+      case 'not_provided':
+        return { text: 'Not provided', color: 'text-red-600' };
+      default:
+        return { text: status, color: 'text-gray-600' };
+    }
+  };
+
+  const getCoverageText = () => {
+    if (covered && provided) {
+      const coveredStatus = formatStatus(covered);
+      const providedStatus = formatStatus(provided);
+      return (
+        <>
+          <span className={darkMode ? coveredStatus.color.replace('600', '400') : coveredStatus.color}>
+            {coveredStatus.text}
+          </span>
+          , 
+          <span className={darkMode ? providedStatus.color.replace('600', '400') : providedStatus.color}>
+            {providedStatus.text}
+          </span>
+        </>
+      );
+    }
+    if (covered) {
+      const status = formatStatus(covered);
+      return (
+        <span className={darkMode ? status.color.replace('600', '400') : status.color}>
+          {status.text}
+        </span>
+      );
+    }
+    if (provided) {
+      const status = formatStatus(provided);
+      return (
+        <span className={darkMode ? status.color.replace('600', '400') : status.color}>
+          {status.text}
+        </span>
+      );
+    }
+    return 'Not specified';
+  };
+
+  return (
+    <div className="flex items-start">
+      <div className={`mr-3 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{icon}</div>
+      <div className="flex-grow">
+        <p className={`text-sm font-semibold ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>{label}</p>
+        <p className="text-xs">{getCoverageText()}</p>
+      </div>
     </div>
   );
 }
