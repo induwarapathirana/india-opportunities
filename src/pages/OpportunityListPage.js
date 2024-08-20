@@ -5,14 +5,14 @@ import OpportunityList from '../components/OpportunityList';
 //import useDarkMode from '../hooks/useDarkMode';
 
 function OpportunityListWrapper() {
-  const { page = "1", committee = "1585", programme = "7" } = useParams();
+  const { page = "1", committee = "1585", programme = "8" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    if (page === "1" && committee === "1585" && programme === "1" && !searchParams.get('q')) {
+    if (page === "1" && committee === "1585" && programme === "8" && !searchParams.get('q')) {
       navigate('/1/1585/1', { replace: true });
     }
   }, [page, committee, programme, searchParams, navigate]);

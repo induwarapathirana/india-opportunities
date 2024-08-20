@@ -138,7 +138,7 @@ function OpportunityCard({ opportunity, darkMode }) {
           <InfoItem 
               icon={<DollarSign size={14} />} 
               label="Salary" 
-              value={specifics_info?.salary || 'Not specified'}
+              value={specifics_info?.salary+` INR` || 'Not specified'}
               darkMode={darkMode}
           />
           <InfoItem 
