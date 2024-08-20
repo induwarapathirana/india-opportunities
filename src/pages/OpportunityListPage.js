@@ -13,7 +13,7 @@ function OpportunityListWrapper() {
 
   useEffect(() => {
     if (page === "1" && committee === "1585" && programme === "8" && !searchParams.get('q')) {
-      navigate('/1/1585/1', { replace: true });
+      navigate('/1/1585/8', { replace: true });
     }
   }, [page, committee, programme, searchParams, navigate]);
 
