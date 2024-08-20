@@ -6,8 +6,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../common/Tooltip';
 import { Home, MapPin, DollarSign, ExternalLink, Info } from 'react-feather';
 
 function OpportunityCard({ opportunity, darkMode }) {
-  const [showTooltip, setShowTooltip] = useState(false);
-
   const {
     id,
     cover_photo,
@@ -19,72 +17,116 @@ function OpportunityCard({ opportunity, darkMode }) {
     available_slots,
     project_fee,
     logistics_info,
+    specifics_info
   } = opportunity;
+
+  const [showTooltip, setShowTooltip] = useState(false);
+  //const cardRef = useRef(null);
+  const buttonRef = useRef(null);
+  const tooltipRef = useRef(null);
+  //const [showPopup, setShowPopup] = useState(false);
+
+  const isGTaorGTe = programme === 8 || programme === 9;
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+        setShowTooltip(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleTooltipToggle = () => {
+    setShowTooltip(!showTooltip);
+  };
 
   return (
     <div className={`${
-      darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'
+      darkMode ? 'bg-gray-800 text-white' : 'bg-white'
     } shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-row`}>
-      <div className="relative h-40 md:h-auto md:w-1/3 lg:w-1/4">
+      <div className="relative h-32 md:h-auto md:w-1/4">
         {cover_photo ? (
           <img src={cover_photo.url} alt={title} className="w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-500">No image available</div>
+          <div className="absolute inset-0 flex items-center justify-center text-gray-500">No image</div>
         )}
       </div>
-      <div className="flex-1 p-4 flex flex-col justify-between">
-        <div>
-          <h2 className="text-xl font-bold mb-2">{title}</h2>
-          <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex-1 p-4 flex flex-col">
+        <div className="mb-2">
+          <h2 className={`text-lg font-bold mb-1 ${darkMode ? 'text-white' : 'text-gray-800'}`}>{title}</h2>
+          <div className="flex flex-wrap gap-1 mb-2">
             <Badge text={programme?.short_name_display} color={darkMode ? 'blue-dark' : 'blue'} />
             <Badge text={location} color={darkMode ? 'green-dark' : 'green'} />
             <Badge text={organisation?.name} color={darkMode ? 'purple-dark' : 'purple'} />
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 text-sm">
-            <InfoItem icon={<Home size={16} />} label="Home LC" value={home_lc?.full_name} darkMode={darkMode} />
-            <InfoItem icon={<MapPin size={16} />} label="Location" value={location} darkMode={darkMode} />
+        <div className="grid grid-cols-2 gap-2 text-sm mb-2">
+          <InfoItem icon={<Home size={14} />} label="Home LC" value={home_lc?.full_name} darkMode={darkMode} />
+          <InfoItem icon={<MapPin size={14} />} label="Location" value={location} darkMode={darkMode} />
+          {isGTaorGTe ? (
             <InfoItem 
-              icon={<DollarSign size={16} />} 
-              label="Project Fee" 
+              icon={<DollarSign size={14} />} 
+              label="Salary" 
+              value={specifics_info?.salary || 'Not specified'}
+              darkMode={darkMode}
+            />
+          ) : (
+            <InfoItem 
+              icon={<DollarSign size={14} />} 
+              label="Fee" 
               value={`${project_fee.fee} ${project_fee.currency}`}
               darkMode={darkMode}
             />
-          </div>
-          <div>
-            <AvailableSlots slots={available_slots} darkMode={darkMode} />
-          </div>
+          )}
+          <div 
+          ref={buttonRef}
+          className={`flex items-center cursor-pointer ${
+            darkMode ? 'bg-blue-700 text-white' : 'bg-blue-100 text-blue-800'
+          } px-2 py-1 rounded-md`}
+          onClick={handleTooltipToggle}
+        >
+          <Info size={14} className="mr-1" />
+          <span className="font-semibold">Logistics Info</span>
         </div>
-        <div className="mt-4 flex items-center justify-between">
-          <Tooltip>
-            <TooltipTrigger className="cursor-pointer flex items-center gap-1 text-sm">
-              <Info size={16} className={darkMode ? 'text-gray-300' : 'text-gray-700'} />
-              <span>Logistics Info</span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <ul className="text-sm space-y-2">
-                <li>Accommodation: {logistics_info?.accommodation_covered ? 'Covered' : 'Not Covered'}, {logistics_info?.accommodation_provided ? 'Provided' : 'Not Provided'}</li>
-                <li>Food: {logistics_info?.food_covered ? 'Covered' : 'Not Covered'}, {logistics_info?.food_provided ? 'Provided' : 'Not Provided'}</li>
-                <li>Computer: {logistics_info?.computer_provided ? 'Provided' : 'Not Provided'}</li>
-                <li>Transportation: {logistics_info?.transportation_covered ? 'Covered' : 'Not Covered'}, {logistics_info?.transportation_provided ? 'Provided' : 'Not Provided'}</li>
-              </ul>
-            </TooltipContent>
-          </Tooltip>
+      </div>
+        <AvailableSlots slots={available_slots} darkMode={darkMode} />
+        <div className="mt-2">
           <a
             href={`https://aiesec.org/opportunity/global-volunteer/${id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className={`text-sm font-bold py-2 px-4 rounded transition duration-300 ease-in-out ${
+            className={`block w-full ${
               darkMode 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
+                ? 'bg-blue-600 hover:bg-blue-700' 
+                : 'bg-blue-600 hover:bg-blue-700'
+            } text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out text-center text-sm`}
           >
-            View Details <ExternalLink size={16} className="inline-block ml-1" />
+            View Details <ExternalLink size={14} className="inline-block ml-1" />
           </a>
         </div>
       </div>
+      {showTooltip && (
+        <div 
+          ref={tooltipRef}
+          className="absolute z-20"
+          style={{
+            top: buttonRef.current ? buttonRef.current.offsetTop + buttonRef.current.offsetHeight + 10 : 0,
+            left: buttonRef.current ? buttonRef.current.offsetLeft : 0,
+          }}
+        >
+          <div className="relative">
+            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-white dark:bg-gray-800"></div>
+            <div className="max-h-72 overflow-y-auto">
+              <LogisticsInfo logistics_info={logistics_info} darkMode={darkMode} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -38,6 +38,9 @@ const GET_OPPORTUNITIES = gql`
           transportation_covered
           transportation_provided
         }
+        specifics_info {
+          salary
+        }
       }
       paging {
         total_items
@@ -84,16 +87,13 @@ function OpportunityCard({ opportunity, darkMode }) {
     organisation,
     available_slots,
     project_fee,
-    logistics_info
+    logistics_info,
+    specifics_info
   } = opportunity;
 
   const [showTooltip, setShowTooltip] = useState(false);
-  //const cardRef = useRef(null);
   const buttonRef = useRef(null);
   const tooltipRef = useRef(null);
-  //const [showPopup, setShowPopup] = useState(false);
-
-  
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -136,10 +136,16 @@ function OpportunityCard({ opportunity, darkMode }) {
           <InfoItem icon={<Home size={14} />} label="Home LC" value={home_lc?.full_name} darkMode={darkMode} />
           <InfoItem icon={<MapPin size={14} />} label="Location" value={location} darkMode={darkMode} />
           <InfoItem 
-            icon={<DollarSign size={14} />} 
-            label="Fee" 
-            value={`${project_fee.fee} ${project_fee.currency}`}
-            darkMode={darkMode}
+              icon={<DollarSign size={14} />} 
+              label="Salary" 
+              value={specifics_info?.salary || 'Not specified'}
+              darkMode={darkMode}
+          />
+          <InfoItem 
+              icon={<DollarSign size={14} />} 
+              label="Fee" 
+              value={`${project_fee.fee} ${project_fee.currency}`}
+              darkMode={darkMode}
           />
           <div 
           ref={buttonRef}
