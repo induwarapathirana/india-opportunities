@@ -161,7 +161,7 @@ function OpportunityCard({ opportunity, darkMode }) {
         <AvailableSlots slots={available_slots} darkMode={darkMode} />
         <div className="mt-2">
           <a
-            href={`https://aiesec.org/opportunity/global-volunteer/${id}`}
+            href={`https://aiesec.org/opportunity/global-talent/${id}`}
             target="_blank"
             rel="noopener noreferrer"
             className={`block w-full ${
